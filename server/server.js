@@ -22,28 +22,28 @@ io.on("connection", (socket) => {
 
   const room = "defaultRoom";
 
-  // Обработка события "join"
   socket.on("join", ({ name, pass }) => {
     socket.join(room);
 
     const { user } = addUser({ name, pass });
 
-    //socket.join(room);
-
-    // Приветственное сообщение пользователю
     socket.emit("message", {
-      data: { user: { name: "Admin" }, message: `Hey ${user.name}` },
+      data: {
+        user: { name: "Admin", pass: "111" },
+        message: `Hey ${user.name}`,
+      },
     });
 
-    // Уведомляем остальных участников комнаты
     socket.broadcast.to(room).emit("message", {
-      data: { user: { name: "Admin" }, message: `${user.name} has joined` },
+      data: {
+        user: { name: "Admin", pass: "111" },
+        message: `${user.name} has joined`,
+      },
     });
 
     console.log(`${user.name} присоединился к комнате ${room}`);
   });
 
-  // Обработка отправки сообщения
   socket.on("sendMessage", ({ message, params }) => {
     console.log(params);
 
@@ -57,7 +57,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Обработка отключения пользователя
   socket.on("disconnect", () => {
     console.log("User disconnected");
   });

@@ -1,52 +1,29 @@
 <template>
-  <div class="messages">
+  <div class="messages__area">
     <div
-      v-for="(msg, i) in messages"
-      :key="i"
-      :class="['message', getClassName(msg.user.name)]"
+      v-for="(msg, index) in messages"
+      :key="index"
+      :class="`message__body ${msg.user === currentUser ? 'me' : 'user'}`"
     >
-      <span class="user">{{ msg.user.name }}</span>
-      <div class="text">{{ msg.message }}</div>
+      <strong class="message__user-name">{{ msg.user }}</strong>
+      <div class="message__text">{{ msg.message }}</div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import "@/assets/main.css";
 
 defineProps({
-  name: String,
+  messages: {
+    type: Array,
+    required: true,
+  },
+  currentUser: {
+    type: String,
+    required: true,
+  },
 });
-
-const getClassName = (username) => {
-  const normalizedName = name.trim().toLowerCase() || "";
-  return username.trim().toLowerCase() === normalizedName ? "me" : "user";
-};
 </script>
 
-<style scoped>
-.messages {
-  padding: 1rem;
-}
-
-.message {
-  margin-bottom: 1rem;
-}
-
-.user {
-  font-weight: bold;
-}
-
-.me {
-  color: blue;
-}
-
-.user {
-  color: green;
-}
-
-.text {
-  margin-top: 0.5rem;
-  font-size: 14px;
-}
-</style>
+<style scoped></style>

@@ -5,9 +5,3 @@
     <router-view />
   </div>
 </template>
-
-<style scoped>
-.app {
-  font-family: Arial, sans-serif;
-}
-</style>

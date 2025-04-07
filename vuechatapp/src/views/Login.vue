@@ -65,5 +65,3 @@ const handleSubmit = () => {
   </main>
   <footer></footer>
 </template>
-
-<style scoped></style>

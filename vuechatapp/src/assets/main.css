@@ -218,7 +218,8 @@ svg * {
   --font-family-base: "Roboto", sans-serif;
   --font-family-accent: "Abel", sans-serif;
 
-  --text-color: #ffffff;
+  --color-light: #ffffff;
+  --color-light-alternate: #cfcfcf;
   --color-dark: #272a35;
   --color-dark-alternate: #292f3f;
   --color-gray: #373e4e;
@@ -271,12 +272,8 @@ body {
   font-weight: 400;
   font-size: 20px;
   line-height: 1;
-  color: var(--text-color);
+  color: var(--color-light);
   background-color: var(--color-dark-alternate);
-}
-
-.footer {
-  height: 90px;
 }
 
 .enter {
@@ -295,7 +292,7 @@ body {
   padding-inline: var(--container-padding-x);
 }
 a {
-  color: var(--text-color);
+  color: var(--color-light);
 }
 
 p {
@@ -309,7 +306,7 @@ h4,
 h5,
 h6 {
   font-weight: 400;
-  color: var(--text-color);
+  color: var(--color-light);
 }
 
 .input {
@@ -319,11 +316,11 @@ h6 {
   background-color: transparent;
   border: var(--border);
   border-radius: var(--border-small-radius);
-  color: var(--text-color);
+  color: var(--color-light);
 }
 
 .input:hover {
-  border-color: var(--text-color);
+  border-color: var(--color-light);
 }
 
 .input:focus {
@@ -331,7 +328,7 @@ h6 {
 }
 
 .header {
-  min-height: 90px;
+  min-height: var(--header-height);
   text-align: center;
   font-size: clamp(15px, 2.29vw, 20px);
   line-height: 1;
@@ -391,7 +388,7 @@ h6 {
   border: none;
   border-radius: var(--border-small-radius);
   text-decoration: none;
-  color: var(--text-color);
+  color: var(--color-light);
 }
 
 .enter-form-button:hover {
@@ -418,7 +415,7 @@ h6 {
   height: 100%;
   aspect-ratio: 1;
   border: var(--color-light-gray);
-  background: url("../assets/message-icon.svg") center/50% no-repeat;
+  background: url("../images/message-icon.svg") center/50% no-repeat;
   background-color: var(--color-gray);
   border-radius: var(--border-small-radius);
 }
@@ -434,8 +431,6 @@ h6 {
 .messages {
   display: flex;
   flex-direction: column;
-  align-items: baseline;
-  row-gap: 30px;
   min-height: calc(100vh - var(--header-height));
   font-family: var(--font-family-base);
   font-weight: 300;
@@ -446,6 +441,16 @@ h6 {
 
 .messages__area {
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  max-height: calc(100vh - var(--header-height) * 2);
+}
+
+.messages__area::-webkit-scrollbar {
+  width: 0;
 }
 
 .message__enter-input {
@@ -453,6 +458,38 @@ h6 {
   background-color: var(--color-dark);
   padding-right: 40px;
   height: 40px;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  width: 100%;
+}
+
+.message__body {
+  width: max-content;
+  border-radius: var(--border-big-radius);
+  padding: 15px 15px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
+}
+
+.message__body.me {
+  background-color: var(--color-dark);
+  justify-content: end;
+  align-self: flex-end;
+  align-items: end;
+}
+
+.message__user-name {
+  color: var(--color-light-alternate);
+  font-size: clamp(12px, 1.98vw, 15px);
+}
+
+.message__body.user {
+  background-color: var(--color-gray);
 }
 
 @media (min-width: 980px) {
