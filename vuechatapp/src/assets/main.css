@@ -287,7 +287,6 @@ body {
 }
 
 .contain {
-  max-width: calc(var(--container-width) + var(--container-padding-x) * 2);
   margin-inline: auto;
   padding-inline: var(--container-padding-x);
 }
@@ -415,7 +414,7 @@ h6 {
   height: 100%;
   aspect-ratio: 1;
   border: var(--color-light-gray);
-  background: url("../images/message-icon.svg") center/50% no-repeat;
+  background: url("./message-icon.svg") center/50% no-repeat;
   background-color: var(--color-gray);
   border-radius: var(--border-small-radius);
 }
@@ -490,6 +489,13 @@ h6 {
 
 .message__body.user {
   background-color: var(--color-gray);
+}
+.message__body.admin {
+  background-color: transparent;
+  justify-content: center;
+  align-self: center;
+  align-items: center;
+  text-align: center;
 }
 
 @media (min-width: 980px) {
