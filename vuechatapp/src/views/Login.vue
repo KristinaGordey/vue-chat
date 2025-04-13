@@ -1,23 +1,40 @@
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+import { io } from "socket.io-client";
 import "../assets/main.css";
+
+const socket = io("http://localhost:5000");
 
 const name = ref("");
 const pass = ref("");
+const error = ref("");
+
 const router = useRouter();
+const route = useRoute();
 
 const handleSubmit = () => {
+  console.log("Отправка формы", name.value, pass.value);
   if (name.value && pass.value) {
-    router.push({
-      name: "Chat",
-      query: {
-        name: name.value,
-        pass: pass.value,
-      },
+    socket.emit("join", {
+      name: name.value,
+      pass: pass.value,
     });
   }
 };
+
+socket.on("authorized", () => {
+  localStorage.setItem("username", name.value);
+  localStorage.setItem("password", pass.value);
+
+  router.push({
+    name: "AllChats",
+  });
+});
+
+socket.on("error", ({ message }) => {
+  error.value = message;
+});
 </script>
 
 <template>
@@ -56,6 +73,7 @@ const handleSubmit = () => {
                 autoComplete="off"
                 required
               />
+              <h6 v-if="error" class="error">{{ error }}</h6>
             </div>
             <button type="submit" class="enter-form-button">Login</button>
           </div>
@@ -65,3 +83,8 @@ const handleSubmit = () => {
   </main>
   <footer></footer>
 </template>
+<style>
+.error {
+  color: red;
+}
+</style>

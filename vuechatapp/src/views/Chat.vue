@@ -3,7 +3,6 @@
     <header class="header">
       <h2 class="header__title header__title-chat">
         <span>Chat name</span>
-
         <div class="visually-hidden">0 users in this room</div>
       </h2>
     </header>
@@ -14,9 +13,9 @@
 
         <Messages
           :messages="messages"
-          :currentUser="params.user || 'Guest'"
+          :currentUser="params.name"
           @mesclick="mesclick"
-        ></Messages>
+        />
 
         <div class="message__enter">
           <form class="message__enter-form" @submit.prevent="handleSubmit">
@@ -34,7 +33,6 @@
             <button title="input" class="message__enter-button" type="submit">
               <span class="visually-hidden">Send message</span>
             </button>
-            <!-- <VueChatEmojiComponent />-->
           </form>
         </div>
       </section>
@@ -49,28 +47,35 @@ import { io } from "socket.io-client";
 import { useRoute } from "vue-router";
 import Messages from "@/components/Messages.vue";
 import "/src/assets/main.css";
-import { VueChatEmojiComponent } from "@nguyenvanlong/vue3-chat-emoji";
-import "@nguyenvanlong/vue3-chat-emoji/dist/index.mjs.css";
 
 const socket = io("http://localhost:5000");
-const params = reactive({ name: "", pass: "" });
-const messages = ref([]);
-const message = ref("");
 
 const route = useRoute();
+const dialogId = route.params.id;
+
+const messages = ref([]);
+const message = ref("");
+const params = reactive({
+  name: localStorage.getItem("username"),
+  pass: localStorage.getItem("password"),
+});
+
 onMounted(() => {
-  const searchParams = Object.fromEntries(new URLSearchParams(route.query));
-
-  params.pass = searchParams.pass;
-
-  params.user = searchParams.name;
-
-  socket.emit("join", searchParams);
-
-  if (!searchParams.name || !searchParams.pass) {
-    console.error("Ошибка: имя пользователя или пароль отсутствуют.");
+  if (!params.name || !params.pass) {
+    console.error("Нет логина или пароля");
     return;
   }
+  console.log("Отправляем join с:", {
+    name: params.name,
+    pass: params.pass,
+    dialogId,
+  });
+
+  socket.emit("join", {
+    name: params.name,
+    pass: params.pass,
+    dialogId,
+  });
 
   socket.on("previousMessages", (previousMessages) => {
     messages.value = previousMessages.map((msg) => ({
@@ -82,31 +87,31 @@ onMounted(() => {
   });
 
   socket.on("message", ({ data }) => {
-    console.log("Получено сообщение: ", data);
     messages.value.push({
-      _id: data.message.id,
+      _id: data.id,
       user: data.user.name,
       message: data.message,
     });
   });
 
   socket.on("messageDeleted", ({ messageId }) => {
-    console.log("Удалено сообщение с ID:", messageId);
     messages.value = messages.value.filter((msg) => msg._id !== messageId);
-    //обновить, иначе не видит id
   });
 });
 
-const mesclick = (mesid) => {
-  console.log(mesid);
-  socket.emit("delete", { mesid });
-};
-
 const handleSubmit = () => {
   if (!message.value) return;
-  socket.emit("sendMessage", { message: message.value, params });
+
+  socket.emit("sendMessage", {
+    message: message.value,
+    params,
+    dialogId,
+  });
+
   message.value = "";
 };
 
-const emojiClick = () => {};
+const mesclick = (mesid) => {
+  socket.emit("delete", { mesid, dialogId });
+};
 </script>

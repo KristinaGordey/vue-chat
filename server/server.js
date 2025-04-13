@@ -2,13 +2,12 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
-import route from "./route.js";
-import { addUser, findUser } from "./users.js";
-import Message from "./db.js";
+import { User, Dialog, Message } from "./db.js";
+import mongoose from "mongoose";
 
 const app = express();
-app.use(cors({ origin: "*" }));
-app.use(route);
+app.use(cors());
+app.use(express.json());
 
 const server = http.createServer(app);
 
@@ -19,72 +18,134 @@ const io = new Server(server, {
   },
 });
 
+const room = "defaultRoom";
+
 io.on("connection", (socket) => {
-  //console.log("A new client connected");
+  console.log(" Новое соединение");
 
-  const room = "defaultRoom";
+  socket.on("join", async ({ name, pass, dialogId = "defaultRoom" }) => {
+    try {
+      if (!name || !pass) {
+        return socket.emit("error", { message: "Имя и пароль обязательны" });
+      }
 
-  socket.on("join", async ({ name, pass }) => {
-    socket.join(room);
+      let user = await User.findOne({ name });
 
-    const { user } = addUser({ name, pass });
+      // ✅ Если пользователь новый
+      if (!user) {
+        user = new User({ name, pass });
+        await user.save();
 
-    const messages = await Message.find();
+        // 🔥 Автоматически создаём диалоги со всеми остальными
+        const otherUsers = await User.find({ _id: { $ne: user._id } });
 
-    socket.emit("previousMessages", messages);
+        for (const otherUser of otherUsers) {
+          const existingDialog = await Dialog.findOne({
+            participants: { $all: [user._id, otherUser._id], $size: 2 },
+          });
 
-    socket.emit("message", {
-      data: {
-        user: { name: "Admin", pass: "111" },
-        message: `Здравствуйте, ${user.name}`,
-      },
-    });
+          if (!existingDialog) {
+            const newDialog = new Dialog({
+              participants: [user._id, otherUser._id],
+            });
+            await newDialog.save();
+          }
+        }
+      } else if (user.pass !== pass) {
+        return socket.emit("error", { message: "Неверный пароль" });
+      }
 
-    socket.broadcast.to(room).emit("message", {
-      data: {
-        user: { name: "Admin", pass: "111" },
-        message: `${user.name} присоединился(сь) к чату`,
-      },
-    });
+      socket.emit("authorized");
+      socket.join(dialogId);
 
-    console.log(`${user.name} присоединился к чату`);
-  });
+      if (!mongoose.Types.ObjectId.isValid(dialogId)) {
+        return socket.emit("error", { message: "Некорректный ID диалога" });
+      }
 
-  socket.on("sendMessage", async ({ message, params }) => {
-    const user = findUser(params);
+      const messages = await Message.find({
+        dialogId: new mongoose.Types.ObjectId(dialogId),
+      }).sort({ time: 1 });
 
-    if (user) {
-      console.log(`Сообщение от ${user.name}:`, message);
+      socket.emit("previousMessages", messages);
 
-      const newMessage = new Message({
-        id_: message.id_,
-        user: user.name,
-        message,
-        time: new Date(),
+      socket.emit("message", {
+        data: {
+          user: { name: "Admin" },
+          message: `Здравствуйте, ${name}`,
+        },
       });
-      await newMessage.save();
 
-      io.to(room).emit("message", { data: { user, message } });
-    } else {
-      console.error("Ошибка: пользователь не найден.");
+      socket.broadcast.to(dialogId).emit("message", {
+        data: {
+          user: { name: "Admin" },
+          message: `${name} присоединился к чату`,
+        },
+      });
+    } catch (err) {
+      console.error("Ошибка при join:", err);
+      socket.emit("error", { message: "Ошибка на сервере" });
     }
   });
 
-  socket.on("delete", async ({ mesid }) => {
-    console.log(mesid);
-    const deleteMessage = await Message.findByIdAndDelete(mesid);
-    console.log(deleteMessage);
-    if (deleteMessage) {
-      io.emit("messageDeleted", { messageId: mesid });
-      console.log("отправил на клиент");
+  socket.on("getDialogs", async (userName) => {
+    try {
+      const user = await User.findOne({ name: userName });
+      if (!user) {
+        console.log("Пользователь не найден:", userName);
+        return;
+      }
+
+      const dialogs = await Dialog.find({ participants: user._id })
+        .populate("participants", "name")
+        .exec();
+
+      socket.emit("dialogList", {
+        dialogs: dialogs.map((dialog) => ({
+          id: dialog._id,
+          participants: dialog.participants
+            .filter((p) => p._id.toString() !== user._id.toString())
+            .map((p) => p.name),
+        })),
+      });
+    } catch (err) {
+      console.error("Ошибка при getDialogs:", err);
+      socket.emit("error", { message: "Ошибка при получении диалогов" });
+    }
+  });
+
+  socket.on("sendMessage", async ({ message, params, dialogId }) => {
+    const { name } = params;
+
+    const newMessage = new Message({
+      user: name,
+      message,
+      dialogId: new mongoose.Types.ObjectId(dialogId),
+      time: new Date(),
+    });
+
+    await newMessage.save();
+
+    io.to(dialogId).emit("message", {
+      data: {
+        user: { name },
+        message,
+        id: newMessage._id,
+      },
+    });
+  });
+
+  socket.on("delete", async ({ mesid, dialogId }) => {
+    const deleted = await Message.findByIdAndDelete(mesid);
+    if (deleted) {
+      io.to(dialogId).emit("messageDeleted", { messageId: mesid });
     }
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected");
+    console.log(" Клиент отключён");
   });
 });
 
 server.listen(5000, () => {
-  console.log("Server is running on port 5000");
+  console.log("Сервер запущен на порту 5000");
 });
