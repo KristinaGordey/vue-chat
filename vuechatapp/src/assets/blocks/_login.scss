@@ -1,0 +1,10 @@
+.login {
+    &__body {
+        max-width: calc(
+            var(--container-width) + var(--container-padding-x) * 2
+        );
+        min-height: calc(100vh - var(--header-height));
+
+        @include flex-center;
+    }
+}

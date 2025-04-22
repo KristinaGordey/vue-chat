@@ -1,0 +1,15 @@
+.button {
+    min-height: 29px;
+    white-space: nowrap; /* чтобы текст на кнопках не переносился */
+    background-color: var(--color-gray-blue);
+    border: none;
+    border-radius: var(--border-small-radius);
+    text-decoration: none;
+    color: var(--color-light);
+
+    &:hover {
+        background-color: var(--color-light-gray);
+    }
+
+    @include flex-center;
+}

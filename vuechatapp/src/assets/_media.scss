@@ -1,0 +1,7 @@
+$tablet-above: 880px;
+
+@mixin tablet-above {
+    @media (min-width: $tablet-above) {
+        @content;
+    }
+}

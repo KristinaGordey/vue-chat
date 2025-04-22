@@ -1,0 +1,32 @@
+button,
+input,
+textarea {
+    transition-duration: var(--transition-duration);
+}
+
+body {
+    font-family: var(--font-family-base);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--color-light);
+    background-color: var(--color-dark-alternate);
+}
+
+a {
+    color: var(--color-light);
+}
+
+p {
+    margin-block: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 400;
+    color: var(--color-light);
+}

@@ -1,0 +1,10 @@
+.dialogs {
+    &__list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__item:hover {
+        background-color: var(--color-gray);
+    }
+}

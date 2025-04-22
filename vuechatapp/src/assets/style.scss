@@ -1,0 +1,6 @@
+@import "normalize", "font", "mixins", "media", "variables", "utils", "globals";
+
+@import "./blocks/header", "./blocks/login", "./blocks/login-form",
+    "./blocks/field", "./blocks/button", "./blocks/input", "./blocks/dialogs",
+    "./blocks/dialog", "./blocks/message-form", "./blocks/messages",
+    "./blocks/message";

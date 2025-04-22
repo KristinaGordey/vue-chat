@@ -1,0 +1,32 @@
+.messages {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - var(--header-height));
+    font-family: var(--font-family-base);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: 1px;
+
+    @include fluid-text(18, 14);
+
+    &__form-wrapper {
+        min-height: var(--header-height);
+        width: 100%;
+        @include flex-center;
+    }
+
+    &__area {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        row-gap: 10px;
+        scroll-snap-type: y mandatory;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        max-height: calc(100vh - var(--header-height) * 2);
+
+        &::-webkit-scrollbar {
+            width: 0;
+        }
+    }
+}

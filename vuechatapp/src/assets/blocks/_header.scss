@@ -1,0 +1,14 @@
+.header {
+    background-color: var(--color-dark-alternate);
+    min-height: var(--header-height);
+    text-align: center;
+    line-height: 1;
+    letter-spacing: 1px;
+
+    @include flex-center;
+    @include fluid-text(20, 15);
+
+    &__title {
+        @include fluid-text(20, 15);
+    }
+}

@@ -1,0 +1,616 @@
+@charset "UTF-8";
+/**
+    Нормализация блочной модели
+   */
+*,
+::before,
+::after {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+/**
+        Убираем внутренние отступы слева тегам списков,
+        у которых есть атрибут class
+       */
+:where(ul, ol):where([class]) {
+  padding-left: 0;
+}
+
+/**
+        Убираем внешние отступы body и двум другим тегам,
+        у которых есть атрибут class
+       */
+body,
+:where(blockquote, figure):where([class]) {
+  margin: 0;
+}
+
+/**
+        Убираем внешние отступы вертикали нужным тегам,
+        у которых есть атрибут class
+       */
+:where(h1, h2, h3, h4, h5, h6, p, ul, ol, dl):where([class]) {
+  margin-block: 0;
+}
+
+:where(dd[class]) {
+  margin-left: 0;
+}
+
+:where(fieldset[class]) {
+  margin-left: 0;
+  padding: 0;
+  border: none;
+}
+
+/**
+        Убираем стандартный маркер маркированному списку,
+        у которого есть атрибут class
+       */
+:where(ul[class]) {
+  list-style: none;
+}
+
+:where(address[class]) {
+  font-style: normal;
+}
+
+/**
+        Обнуляем вертикальные внешние отступы параграфа,
+        объявляем локальную переменную для внешнего отступа вниз,
+        чтобы избежать взаимодействие с более сложным селектором
+       */
+p {
+  --paragraphMarginBottom: 24px;
+  margin-block: 0;
+}
+
+/**
+        Внешний отступ вниз для параграфа без атрибута class,
+        который расположен не последним среди своих соседних элементов
+       */
+p:where(:not([class]):not(:last-child)) {
+  margin-bottom: var(--paragraphMarginBottom);
+}
+
+/**
+        Упрощаем работу с изображениями и видео
+       */
+img,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/**
+        Наследуем свойства шрифт для полей ввода
+       */
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+html {
+  /**
+        Пригодится в большинстве ситуаций
+        (когда, например, нужно будет "прижать" футер к низу сайта)
+       */
+  height: 100%;
+  /**
+        Убираем скачок интерфейса по горизонтали
+        при появлении / исчезновении скроллбара
+       */
+  scrollbar-gutter: stable;
+}
+
+/**
+        Плавный скролл
+       */
+html,
+:has(:target) {
+  scroll-behavior: smooth;
+}
+
+body {
+  /**
+        Пригодится в большинстве ситуаций
+        (когда, например, нужно будет "прижать" футер к низу сайта)
+       */
+  min-height: 100%;
+  /**
+        Унифицированный интерлиньяж
+       */
+  line-height: 1.5;
+}
+
+/**
+        Нормализация высоты элемента ссылки при его инспектировании в DevTools
+       */
+a:where([class]) {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+/**
+        Курсор-рука при наведении на элемент
+       */
+button,
+label {
+  cursor: pointer;
+}
+
+/**
+        Приводим к единому цвету svg-элементы
+        (за исключением тех, у которых уже указан
+        атрибут fill со значением 'none' или начинается с 'url')
+       */
+:where([fill]:not([fill=none], [fill^=url])) {
+  fill: currentColor;
+}
+
+/**
+        Приводим к единому цвету svg-элементы
+        (за исключением тех, у которых уже указан
+        атрибут stroke со значением 'none')
+       */
+:where([stroke]:not([stroke=none], [stroke^=url])) {
+  stroke: currentColor;
+}
+
+/**
+        Чиним баг задержки смены цвета при взаимодействии с svg-элементами
+       */
+svg * {
+  -webkit-transition-property: fill, stroke;
+  transition-property: fill, stroke;
+}
+
+/**
+        Приведение рамок таблиц в классический 'collapse' вид
+       */
+:where(table) {
+  border-collapse: collapse;
+  border-color: currentColor;
+}
+
+/**
+        Удаляем все анимации и переходы для людей,
+        которые предпочитают их не использовать
+       */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    -webkit-animation-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+    -webkit-animation-iteration-count: 1 !important;
+            animation-iteration-count: 1 !important;
+    -webkit-transition-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+@font-face {
+  font-family: "Abel";
+  src: url("./fonts/Abel-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Roboto";
+  src: url("./fonts/Roboto-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Roboto";
+  src: url("./fonts/Roboto-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+/* миксин для размера шрифта (чтобы он был адаптивным) */
+/* для сброса дефолтных стилей у ссылок */
+/* для сброса дефолтных стилей у кнопок */
+/* чтобы придать элементу одинаковые высоту и ширину */
+:root {
+  --font-family-base: "Roboto", sans-serif;
+  --font-family-accent: "Abel", sans-serif;
+  --color-light: #ffffff;
+  --color-light-alternate: #cfcfcf;
+  --color-dark: #272a35;
+  --color-dark-alternate: #292f3f;
+  --color-gray: #373e4e;
+  --color-light-gray: #818182;
+  --color-gray-blue: #42566c;
+  --border: 1px solid var(--color-light-gray);
+  --border-small-radius: 10px;
+  --border-big-radius: 20px;
+  --container-width: 1300px;
+  --container-padding-x: 15px;
+  --transition-duration: 0.2s;
+  --input-height: 32px;
+  --textarea-height: 40px;
+  --header-height: 90px;
+}
+
+.contain {
+  margin-inline: auto;
+  padding-inline: var(--container-padding-x);
+}
+
+.error-message {
+  margin-top: 5px;
+  padding-left: 2px;
+  width: 100%;
+  color: red;
+  font-size: clamp(15px, 3.0303030303vw, 20px);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  border: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  clip-path: inset(100%) !important;
+  clip: rect(0 0 0 0) !important;
+  overflow: hidden !important;
+}
+
+button,
+input,
+textarea {
+  -webkit-transition-duration: var(--transition-duration);
+          transition-duration: var(--transition-duration);
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--color-light);
+  background-color: var(--color-dark-alternate);
+}
+
+a {
+  color: var(--color-light);
+}
+
+p {
+  margin-block: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 400;
+  color: var(--color-light);
+}
+
+.header {
+  background-color: var(--color-dark-alternate);
+  min-height: var(--header-height);
+  text-align: center;
+  line-height: 1;
+  letter-spacing: 1px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  font-size: clamp(15px, 3.0303030303vw, 20px);
+}
+.header__title {
+  font-size: clamp(15px, 3.0303030303vw, 20px);
+}
+
+.login__body {
+  max-width: calc(var(--container-width) + var(--container-padding-x) * 2);
+  min-height: calc(100vh - var(--header-height));
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.login-form__button {
+  width: 100%;
+}
+.login-form__input:hover {
+  border-color: var(--color-light);
+}
+.login-form__body {
+  font-family: var(--font-family-accent);
+  font-weight: 400;
+  line-height: 1.1;
+  row-gap: 25px;
+  max-width: 400px;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  font-size: clamp(20px, 4.5454545455vw, 30px);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+@media (min-width: 880px) {
+  .login-form__body {
+    row-gap: 35px;
+  }
+}
+
+.field {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 6px;
+}
+.field__input {
+  width: 100%;
+}
+.field__label {
+  font-size: clamp(20px, 5.303030303vw, 35px);
+}
+
+.button {
+  min-height: 29px;
+  white-space: nowrap; /* чтобы текст на кнопках не переносился */
+  background-color: var(--color-gray-blue);
+  border: none;
+  border-radius: var(--border-small-radius);
+  text-decoration: none;
+  color: var(--color-light);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.button:hover {
+  background-color: var(--color-light-gray);
+}
+
+.input {
+  min-height: var(--input-height);
+  padding-inline: 25px;
+  padding-block: 5px;
+  width: 100%;
+  background-color: transparent;
+  border: var(--border);
+  border-radius: var(--border-small-radius);
+  color: var(--color-light);
+}
+.input--dark {
+  border: none;
+  background-color: var(--color-dark);
+}
+.input:focus {
+  outline: none;
+}
+
+.dialogs__list {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+.dialogs__item:hover {
+  background-color: var(--color-gray);
+}
+
+.dialog {
+  min-height: var(--header-height);
+  padding: 15px;
+  font-size: clamp(15px, 3.0303030303vw, 20px);
+}
+
+.message-form {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 100%;
+}
+.message-form__input {
+  --borderWidth: 8px;
+  padding-right: calc(var(--textarea-height) + 25px);
+  padding-block: calc((var(--textarea-height) - var(--borderWidth) * 2 - clamp(14px, 2.7272727273vw, 18px)) / 2);
+  height: var(--textarea-height);
+  resize: none;
+  overflow-y: scroll;
+  border: var(--borderWidth) solid var(--color-dark);
+}
+.message-form__input::-webkit-scrollbar {
+  width: 0;
+}
+.message-form__button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  aspect-ratio: 1;
+  border: var(--color-light-gray);
+  background: url("./message-icon.svg") center/50% no-repeat;
+  background-color: var(--color-gray);
+  border-radius: var(--border-small-radius);
+}
+
+.messages {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  min-height: calc(100vh - var(--header-height));
+  font-family: var(--font-family-base);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 1px;
+  font-size: clamp(14px, 2.7272727273vw, 18px);
+}
+.messages__form-wrapper {
+  min-height: var(--header-height);
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.messages__area {
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 10px;
+  -ms-scroll-snap-type: y mandatory;
+      scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: calc(100vh - var(--header-height) * 2);
+}
+.messages__area::-webkit-scrollbar {
+  width: 0;
+}
+
+.message {
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
+  max-width: 70%;
+  border-radius: var(--border-big-radius);
+  padding: 0.95em 1.25em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 0.32em;
+}
+@media (min-width: 880px) {
+  .message {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-column-gap: 10px;
+       -moz-column-gap: 10px;
+            column-gap: 10px;
+  }
+}
+.message__body {
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 5px;
+  overflow-wrap: anywhere;
+}
+.message__text {
+  width: 100%;
+  line-height: 1.5;
+}
+.message--me {
+  background-color: var(--color-dark);
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: end;
+  -ms-flex-item-align: end;
+      align-self: flex-end;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: end;
+}
+.message--user {
+  background-color: var(--color-gray);
+}
+.message--admin {
+  background-color: transparent;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  text-align: center;
+}
+.message__user-name {
+  color: var(--color-light-alternate);
+  font-size: clamp(12px, 2.2727272727vw, 15px);
+}
+.message__time {
+  -ms-flex-item-align: end;
+      align-self: flex-end;
+  color: var(--color-light-alternate);
+  margin-bottom: calc(-1 * clamp(12px, 2.2727272727vw, 15px) / 2);
+  margin-right: -0.6em;
+  font-size: clamp(10px, 1.8181818182vw, 12px);
+}

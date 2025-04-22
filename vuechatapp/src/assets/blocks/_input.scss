@@ -1,0 +1,19 @@
+.input {
+    min-height: var(--input-height);
+    padding-inline: 25px;
+    padding-block: 5px;
+    width: 100%;
+    background-color: transparent;
+    border: var(--border);
+    border-radius: var(--border-small-radius);
+    color: var(--color-light);
+
+    &--dark {
+        border: none;
+        background-color: var(--color-dark);
+    }
+
+    &:focus {
+        outline: none;
+    }
+}

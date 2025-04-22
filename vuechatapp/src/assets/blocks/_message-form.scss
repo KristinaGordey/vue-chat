@@ -1,0 +1,38 @@
+.message-form {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+    &__input {
+        --borderWidth: 8px;
+        padding-right: calc(var(--textarea-height) + 25px);
+        padding-block: calc(
+            (
+                    (var(--textarea-height) - var(--borderWidth) * 2) -
+                        fluid-size(18, 14)
+                ) / 2
+        );
+        height: var(--textarea-height);
+        resize: none;
+        overflow-y: scroll;
+        border: var(--borderWidth) solid var(--color-dark);
+
+        &::-webkit-scrollbar {
+            width: 0;
+        }
+    }
+
+    &__button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        aspect-ratio: 1;
+        border: var(--color-light-gray);
+        background: url("./message-icon.svg") center/50% no-repeat;
+        background-color: var(--color-gray);
+        border-radius: var(--border-small-radius);
+    }
+}
