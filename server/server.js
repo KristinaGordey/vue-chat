@@ -18,7 +18,7 @@ const io = new Server(server, {
   },
 });
 
-const room = "defaultRoom";
+//const room = "defaultRoom";
 
 io.on("connection", (socket) => {
   console.log(" Новое соединение");
@@ -31,12 +31,10 @@ io.on("connection", (socket) => {
 
       let user = await User.findOne({ name });
 
-      // ✅ Если пользователь новый
       if (!user) {
         user = new User({ name, pass });
         await user.save();
 
-        // 🔥 Автоматически создаём диалоги со всеми остальными
         const otherUsers = await User.find({ _id: { $ne: user._id } });
 
         for (const otherUser of otherUsers) {
@@ -66,12 +64,25 @@ io.on("connection", (socket) => {
         dialogId: new mongoose.Types.ObjectId(dialogId),
       }).sort({ time: 1 });
 
-      socket.emit("previousMessages", messages);
+      const dialog = await Dialog.findById(dialogId).populate(
+        "participants",
+        "name"
+      );
+      if (!dialog) {
+        return socket.emit("error", { message: "Диалог не найден" });
+      }
+
+      const companion = dialog.participants.find((p) => p.name !== name);
+
+      socket.emit("previousMessages", {
+        messages,
+        companionName: companion ? companion.name : "Собеседник",
+      });
 
       socket.emit("message", {
         data: {
           user: { name: "Admin" },
-          message: `Здравствуйте, ${name}`,
+          message: ` ${name} в сети`,
         },
       });
 
@@ -130,6 +141,7 @@ io.on("connection", (socket) => {
         user: { name },
         message,
         id: newMessage._id,
+        time: newMessage.time,
       },
     });
   });
