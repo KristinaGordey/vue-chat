@@ -1,26 +1,21 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import { io } from "socket.io-client";
-
-const socket = io("http://localhost:5000");
-const dialogs = ref([]);
-
-onMounted(() => {
-  socket.on("dialogList", ({ dialogs: serverDialogs }) => {
-    dialogs.value = serverDialogs;
-  });
+const props = defineProps({
+  dialog: {
+    type: Object,
+    required: true,
+  },
 });
+
+const emit = defineEmits(["select"]); //обьявляю массив кастомных событий, которые компонент будет этимировать
 </script>
 
 <template>
-  <div class="dialogs-page">
-    <h2>Ваши диалоги</h2>
-    <ul>
-      <li v-for="dialog in dialogs" :key="dialog.id" class="dialog-item">
-        <router-link :to="{ name: 'Chat', query: { dialogId: dialog.id } }">
-          {{ dialog.participants.join(", ") }}
-        </router-link>
-      </li>
-    </ul>
-  </div>
+  <!--отправка кастомного события родителю AllChats-->
+  <li class="dialogs__item" @click="emit('select', dialog.id)">
+    <div class="dialog contain">
+      <p class="dialog__name">
+        {{ dialog.participants.join(", ") }}
+      </p>
+    </div>
+  </li>
 </template>

@@ -2,8 +2,10 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
-import { io } from "socket.io-client";
-const socket = io("http://localhost:5000");
+//import { io } from "socket.io-client";
+import Dialog from "@/components/Dialog.vue";
+import socket from "@/socket";
+//const socket = io("http://localhost:5000");
 
 const dialogs = ref([]);
 const router = useRouter();
@@ -41,18 +43,12 @@ const goToDialog = (dialogId) => {
   </header>
   <div class="dialogs">
     <ul class="dialogs__list">
-      <li
-        class="dialogs__item"
+      <Dialog
         v-for="dialog in dialogs"
         :key="dialog.id"
-        @click="goToDialog(dialog.id)"
-      >
-        <div class="dialog contain">
-          <p class="dialog__name">
-            {{ dialog.participants.join(", ") }}
-          </p>
-        </div>
-      </li>
+        :dialog="dialog"
+        @select="goToDialog"
+      />
     </ul>
   </div>
 </template>

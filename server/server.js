@@ -5,6 +5,8 @@ import cors from "cors";
 import { User, Dialog, Message } from "./db.js";
 import mongoose from "mongoose";
 
+import jwt from "jsonwebtoken";
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -17,13 +19,23 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+const JWT_SECRET = "9e8f2d4b-b3a1-4176-a8a9-7e0dcd4e9c7f";
 
 //const room = "defaultRoom";
+
+//валидация токена
+//const verifyToken = (token) => {
+//try {
+//return jwt.verify(token, JWT_SECRET);
+//} catch (err) {
+//   return null;
+// }
+//};
 
 io.on("connection", (socket) => {
   console.log(" Новое соединение");
 
-  socket.on("join", async ({ name, pass, dialogId = "defaultRoom" }) => {
+  socket.on("join", async ({ name, pass, dialogId }) => {
     try {
       if (!name || !pass) {
         return socket.emit("error", { message: "Имя и пароль обязательны" });
@@ -39,7 +51,7 @@ io.on("connection", (socket) => {
 
         for (const otherUser of otherUsers) {
           const existingDialog = await Dialog.findOne({
-            participants: { $all: [user._id, otherUser._id], $size: 2 },
+            participants: { $all: [user._id, otherUser._id], $size: 2 }, //все документы, содержащие обоих пользователей
           });
 
           if (!existingDialog) {
@@ -52,6 +64,8 @@ io.on("connection", (socket) => {
       } else if (user.pass !== pass) {
         return socket.emit("error", { message: "Неверный пароль" });
       }
+      //генерация токена jwt
+      const token = jwt.sign({ name }, JWT_SECRET, { expiresIn: "12h" });
 
       socket.emit("authorized");
       socket.join(dialogId);
@@ -111,11 +125,13 @@ io.on("connection", (socket) => {
         .exec();
 
       socket.emit("dialogList", {
+        //меняю структуру диалогов для отправки на клиент
         dialogs: dialogs.map((dialog) => ({
           id: dialog._id,
           participants: dialog.participants
             .filter((p) => p._id.toString() !== user._id.toString())
-            .map((p) => p.name),
+            .map((p) => p.name), //оставляю только имена, надо добавить фотку?
+          //avatar: p:avatar
         })),
       });
     } catch (err) {

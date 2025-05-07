@@ -13,6 +13,7 @@
       @contextmenu.prevent="$emit('mesclick', msg._id)"
     >
       <div class="message__body">
+        <!--эмитим кастомное событие mesclick-->
         <p v-if="msg.user !== 'Admin'" class="message__user-name">
           {{ msg.user }}
         </p>

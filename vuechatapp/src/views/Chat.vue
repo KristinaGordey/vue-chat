@@ -36,12 +36,13 @@
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";
-import { io } from "socket.io-client";
+//import { io } from "socket.io-client";
 import { useRoute } from "vue-router";
 import Messages from "@/components/Messages.vue";
 import "/src/assets/style.css";
+import socket from "@/socket";
 
-const socket = io("http://localhost:5000");
+//const socket = io("http://localhost:5000");
 
 const route = useRoute();
 const dialogId = route.params.id;
