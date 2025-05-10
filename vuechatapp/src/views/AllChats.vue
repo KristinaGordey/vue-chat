@@ -12,7 +12,7 @@ const router = useRouter();
 
 onMounted(() => {
   // явно запрашиваю диалоги (повторно)
-  const name = localStorage.getItem("username"); // имя из login
+  const name = sessionStorage.getItem("username"); // имя из login
   if (name) {
     socket.emit("getDialogs", name); // сервер сам найдёт юзера и вернёт
   }
@@ -24,8 +24,8 @@ onMounted(() => {
 });
 
 const goToDialog = (dialogId) => {
-  const name = localStorage.getItem("username");
-  const pass = localStorage.getItem("password");
+  const name = sessionStorage.getItem("username");
+  const pass = sessionStorage.getItem("password");
   router.push({
     name: "Chat",
     params: { id: dialogId },

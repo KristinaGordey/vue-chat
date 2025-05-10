@@ -24,8 +24,8 @@ const handleSubmit = () => {
 };
 
 socket.on("authorized", () => {
-  localStorage.setItem("username", name.value);
-  localStorage.setItem("password", pass.value);
+  sessionStorage.setItem("username", name.value);
+  sessionStorage.setItem("password", pass.value);
 
   router.push({
     name: "AllChats",

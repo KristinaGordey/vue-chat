@@ -50,8 +50,8 @@ const dialogId = route.params.id;
 const messages = ref([]);
 const message = ref("");
 const params = reactive({
-  name: localStorage.getItem("username"),
-  pass: localStorage.getItem("password"),
+  name: sessionStorage.getItem("username"),
+  pass: sessionStorage.getItem("password"),
 });
 const companionName = ref("Chat name");
 
