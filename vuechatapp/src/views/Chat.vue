@@ -11,7 +11,9 @@
           :messages="messages"
           :currentUser="params.name"
           @mesclick="mesclick"
+          @editMessage="editMessage"
         />
+
         <div class="messages__form-wrapper">
           <form class="message-form" @submit.prevent="handleSubmit">
             <textarea
@@ -54,6 +56,9 @@ const params = reactive({
   pass: sessionStorage.getItem("password"),
 });
 const companionName = ref("Chat name");
+const editMessage = ({ mesid, newMessage }) => {
+  socket.emit("editMessage", { mesid, newMessage, dialogId });
+};
 
 onMounted(() => {
   if (!params.name || !params.pass) {
@@ -96,6 +101,12 @@ onMounted(() => {
 
   socket.on("messageDeleted", ({ messageId }) => {
     messages.value = messages.value.filter((msg) => msg._id !== messageId);
+  });
+  socket.on("messageUpdated", ({ messageId, newMessage }) => {
+    const msgIndex = messages.value.findIndex((msg) => msg._id === messageId);
+    if (msgIndex !== -1) {
+      messages.value[msgIndex].message = newMessage;
+    }
   });
 });
 

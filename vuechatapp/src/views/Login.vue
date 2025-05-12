@@ -23,7 +23,8 @@ const handleSubmit = () => {
   }
 };
 
-socket.on("authorized", () => {
+socket.on("authorized", ({ token }) => {
+  console.log("Полученный токен на клиенте:", token);
   sessionStorage.setItem("username", name.value);
   sessionStorage.setItem("password", pass.value);
 

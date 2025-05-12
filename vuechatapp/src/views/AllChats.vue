@@ -26,14 +26,17 @@ onMounted(() => {
 const goToDialog = (dialogId) => {
   const name = sessionStorage.getItem("username");
   const pass = sessionStorage.getItem("password");
-  router.push({
-    name: "Chat",
-    params: { id: dialogId },
-    query: {
-      name,
-      pass,
-    },
-  });
+  router
+    .push({
+      name: "Chat",
+      params: { id: dialogId },
+      query: {
+        name,
+        pass,
+      },
+    })
+    .then(() => router.go(0));
+  //принудительно обновляю страницу потому что push не хочет
 };
 </script>
 

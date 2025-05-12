@@ -8,7 +8,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(async () => {
-    console.log("🧹 Подключено к MongoDB");
+    console.log(" Подключено к MongoDB");
 
     const collections = await mongoose.connection.db
       .listCollections()
@@ -16,12 +16,12 @@ mongoose
 
     for (let coll of collections) {
       await mongoose.connection.db.dropCollection(coll.name);
-      console.log(`✅ Коллекция удалена: ${coll.name}`);
+      console.log(`Коллекция удалена: ${coll.name}`);
     }
 
-    console.log("🎉 Очистка завершена");
+    console.log(" Очистка завершена");
     mongoose.disconnect();
   })
   .catch((err) => {
-    console.error("❌ Ошибка подключения или удаления:", err);
+    console.error("Ошибка подключения или удаления:", err);
   });

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@nguyenvanlong/vue3-chat-emoji": "^0.1.4",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "emoji-picker-element": "^1.26.1",
     "express": "^5.1.0",

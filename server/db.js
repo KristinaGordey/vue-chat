@@ -51,3 +51,15 @@ mongoose
   });
 
 export { User, Dialog, Message };
+async function clearDatabase() {
+  try {
+    await User.deleteMany({});
+    await Dialog.deleteMany({});
+    await Message.deleteMany({});
+    console.log("Все коллекции успешно очищены!");
+  } catch (error) {
+    console.error("Ошибка при очистке базы данных:", error);
+  }
+}
+
+//clearDatabase();
